@@ -21,8 +21,10 @@ var game = {
   losses: 0
 }
 
+// Initialize list of possible words
 var wordsList = ['Illinois', 'Indiana', 'Ohio State', 'Iowa', 'Northwestern', 'Minnesota', 'Michigan', 'Michigan State', 'Penn State', 'Maryland', 'Rutgers', 'Wisconsin', 'Purdue', 'Nebraska'];
 
+// Initialize applicable elements
 var gameStatusElement = document.getElementById('gameStatus');
 var currentWordElement = document.getElementById('currentWord');
 var lettersGuessedElement = document.getElementById('lettersGuessed');
@@ -30,6 +32,7 @@ var numGuessesRemainingElement = document.getElementById('numGuessesRemaining');
 var winCountElement = document.getElementById('winCount');
 var lossCountElement = document.getElementById('lossCount');
 
+// Updates the game variables and the UI
 function updateGame(keyPressedCode = null) {
   // update guess history array
   updateLettersGuessed(keyPressedCode);
