@@ -14,7 +14,10 @@ var game = {
   currentWord: '',
   lettersGuessed: [],
   remainingGuesses: 0,
-  statusText: constants.newGame
+  statusText: constants.newGame,
+  currentWordAscii: {},
+  wins: 0,
+  losses: 0
 }
 
 var wordsList = ['Illinois', 'Indiana', 'Ohio State', 'Iowa', 'Northwestern', 'Minnesota', 'Michigan', 'Michigan State', 'Penn State', 'Maryland', 'Rutgers', 'Wisconsin', 'Purdue', 'Nebraska'];
@@ -29,6 +32,7 @@ function updateGame(keyPressedCode = null) {
   updateLettersGuessed(keyPressedCode);
 
   // check for end condition
+  checkForEndCondition();
 
   // update game display
   gameStatusElement.textContent = game.statusText;
@@ -82,8 +86,35 @@ function updateGame(keyPressedCode = null) {
   }
 }
 
-function updateGameVariables(keyPressedCode = null) {
-  
+function checkForEndCondition() {
+  // assume game is over and user won
+  var endFlag = true;
+  var userWins = true;
+
+  // if the user didn't guess all of the letters, game may not be over
+  for (var charCode in game.currentWordAscii) {
+    if (!game.currentWordAscii[charCode]) {
+      endFlag = false;
+      userWins = false;
+    }
+  }
+
+  // game is over when user runs out of guesses
+  if (game.remainingGuesses <= 0) {
+    endFlag = true;
+  }
+
+  if (endFlag) {
+    game.inProgress = false;
+    
+    if (userWins) {
+      game.statusText = constants.win;
+      game.wins++;
+    } else {
+      game.statusText = constants.loss;
+      game.losses++;
+    }
+  }
 }
 
 function updateGuessesRemaining() {
@@ -96,10 +127,12 @@ function updateLettersGuessed(keyPressedCode = null) {
   if (keyPressedCode !== null && keyPressedCode >= 65 && keyPressedCode <= 90) {
     if (game.lettersGuessed.indexOf(keyPressedCode) === -1) {
       game.lettersGuessed.push(keyPressedCode);
-    }
 
-    if (!game.currentWord.includes(String.fromCharCode(keyPressedCode))) {
-      updateGuessesRemaining();
+      if (game.currentWordAscii[keyPressedCode] !== undefined) {
+        game.currentWordAscii[keyPressedCode] = true;
+      } else {
+        updateGuessesRemaining();
+      }
     }
   }
 }
@@ -109,9 +142,18 @@ function startNewGame() {
   game.lettersGuessed = [];
   game.remainingGuesses = 12;
   game.statusText = constants.inProgress;
+  game.currentWordAscii = {};
 
   var randomIndex = Math.floor(Math.random() * wordsList.length);
   game.currentWord = wordsList[randomIndex].toUpperCase();
+
+  for (var char of game.currentWord) {
+    if (char.charCodeAt(0) === 32) {
+      game.currentWordAscii[char.charCodeAt(0)] = true;
+    } else {
+      game.currentWordAscii[char.charCodeAt(0)] = false;
+    }
+  }
 }
 
 document.onkeyup = function(event) {
