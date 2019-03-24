@@ -27,7 +27,6 @@ var numGuessesRemainingElement = document.getElementById('numGuessesRemaining');
 function updateGame(keyPressedCode = null) {
   // update guess history array
   updateLettersGuessed(keyPressedCode);
-  console.log(game.lettersGuessed);
 
   // check for end condition
 
@@ -50,7 +49,6 @@ function updateGame(keyPressedCode = null) {
     currentWordLetter.setAttribute('class', 'mx-2');
     currentWordLetter.setAttribute('id', charCode);
     
-    console.log(game.lettersGuessed.indexOf(charCode));
     if (game.lettersGuessed.indexOf(charCode) >= 0) {
       currentWordLetter.textContent = String.fromCharCode(charCode);
     } else if (char.charCodeAt(0) === 32) {
@@ -60,8 +58,6 @@ function updateGame(keyPressedCode = null) {
     }
     
     currentWordListElement.appendChild(currentWordLetter);
-    // console.log(char);
-    // console.log(char.charCodeAt(0));
   }
 
   numGuessesRemainingElement.textContent = game.remainingGuesses;
@@ -100,6 +96,9 @@ function updateLettersGuessed(keyPressedCode = null) {
   if (keyPressedCode !== null && keyPressedCode >= 65 && keyPressedCode <= 90) {
     if (game.lettersGuessed.indexOf(keyPressedCode) === -1) {
       game.lettersGuessed.push(keyPressedCode);
+    }
+
+    if (!game.currentWord.includes(String.fromCharCode(keyPressedCode))) {
       updateGuessesRemaining();
     }
   }
@@ -113,7 +112,6 @@ function startNewGame() {
 
   var randomIndex = Math.floor(Math.random() * wordsList.length);
   game.currentWord = wordsList[randomIndex].toUpperCase();
-  console.log(game.currentWord);
 }
 
 document.onkeyup = function(event) {
