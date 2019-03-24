@@ -1,4 +1,5 @@
-.currentWord li {
+.currentWord li,
+.lettersGuessedList li {
   list-style: none;
   display: inline;
 }

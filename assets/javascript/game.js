@@ -1,100 +1,136 @@
 var gameStatus = false;
-var currentWord;
-var lettersGuessed = [];
+var endCondition = false;
 var guessesRemaining;
+
+const constants = {
+  newGame: 'Press The Space Bar To Start A New Game',
+  inProgress: 'Press Any Letter To Continue',
+  win: 'Congratulations! You Won!  Press The Space Bar To Start A New Game',
+  loss: 'Sorry, You Are Out Of Guesses.  Press The Space Bar To Start A New Game'
+}
+
+var game = {
+  inProgress: false,
+  currentWord: '',
+  lettersGuessed: [],
+  remainingGuesses: 0,
+  statusText: constants.newGame
+}
 
 var wordsList = ['Illinois', 'Indiana', 'Ohio State', 'Iowa', 'Northwestern', 'Minnesota', 'Michigan', 'Michigan State', 'Penn State', 'Maryland', 'Rutgers', 'Wisconsin', 'Purdue', 'Nebraska'];
 
 var gameStatusElement = document.getElementById('gameStatus');
 var currentWordElement = document.getElementById('currentWord');
 var lettersGuessedElement = document.getElementById('lettersGuessed');
+var numGuessesRemainingElement = document.getElementById('numGuessesRemaining');
 
-function updateGameScreen(keyPressedCode = null) {
-  // update game status text
-  if (!gameStatus) {
-    gameStatusElement.textContent = 'Press Any Key To Get Started';
-  } else {
-    gameStatusElement.textContent = 'Press Any Letter To Continue Guessing';
-  }
-
-  // update current word
-  updateCurrentWord(keyPressedCode);
-
-  // update remaining guesses count
-
+function updateGame(keyPressedCode = null) {
   // update guess history array
+  updateLettersGuessed(keyPressedCode);
+  console.log(game.lettersGuessed);
 
   // check for end condition
+
+  // update game display
+  gameStatusElement.textContent = game.statusText;
+
+  var currentWordListElement = document.getElementById('currentWordList');
+  if (currentWordListElement === null) {
+    currentWordListElement = document.createElement('ul');
+    currentWordListElement.setAttribute('id', 'currentWordList');
+    currentWordListElement.setAttribute('class', 'currentWord');
+
+    currentWordElement.appendChild(currentWordListElement);
+  }
+
+  currentWordListElement.innerHTML = '';
+  for (var char of game.currentWord) {
+    var charCode = char.charCodeAt(0);
+    var currentWordLetter = document.createElement('li');
+    currentWordLetter.setAttribute('class', 'mx-2');
+    currentWordLetter.setAttribute('id', charCode);
+    
+    console.log(game.lettersGuessed.indexOf(charCode));
+    if (game.lettersGuessed.indexOf(charCode) >= 0) {
+      currentWordLetter.textContent = String.fromCharCode(charCode);
+    } else if (char.charCodeAt(0) === 32) {
+      currentWordLetter.textContent = ' ';
+    } else {
+      currentWordLetter.textContent = '_';
+    }
+    
+    currentWordListElement.appendChild(currentWordLetter);
+    // console.log(char);
+    // console.log(char.charCodeAt(0));
+  }
+
+  numGuessesRemainingElement.textContent = game.remainingGuesses;
+  
+  var lettersGuessedListElement = document.getElementById('lettersGuessedList');
+  if (lettersGuessedListElement === null) {
+    lettersGuessedListElement = document.createElement('ul');
+    lettersGuessedListElement.setAttribute('id', 'lettersGuessedList');
+    lettersGuessedListElement.setAttribute('class', 'lettersGuessedList');
+
+    lettersGuessedElement.appendChild(lettersGuessedListElement);
+  }
+
+  lettersGuessedListElement.innerHTML = '';
+  for (var i = 0; i < game.lettersGuessed.length; i++) {
+    var guessedLetter = document.createElement('li');
+    guessedLetter.setAttribute('class', 'mx-2');
+
+    guessedLetter.textContent = String.fromCharCode(game.lettersGuessed[i]);
+
+    lettersGuessedListElement.appendChild(guessedLetter);
+  }
 }
 
-function updateCurrentWord(keyPressedCode = null) {
-  if (currentWord !== undefined) {
-    if (keyPressedCode === null) {
-      var currentWordListElement = document.createElement('ul');
-      currentWordListElement.setAttribute('id', 'currentWordList');
-      currentWordListElement.setAttribute('class', 'currentWord');
-
-      currentWordElement.appendChild(currentWordListElement);
-
-      for (var char of currentWord) {
-        var currentWordLetter = document.createElement('li');
-        currentWordLetter.setAttribute('class', 'mx-2');
-        
-        if (char.charCodeAt(0) === 32) {
-          currentWordLetter.textContent = ' ';
-        } else {
-          currentWordLetter.textContent = '_';
-        }
-        
-        currentWordListElement.appendChild(currentWordLetter);
-        console.log(char);
-        console.log(char.charCodeAt(0));
-      }
-    } else {
-
-
-    }
-  }
+function updateGameVariables(keyPressedCode = null) {
+  
 }
 
 function updateGuessesRemaining() {
-  if (!gameStatus) {
-    guessesRemaining = 0;
+  if (!gameStatus && game.remainingGuesses > 0) {
+    game.remainingGuesses--;
   }
 }
 
 function updateLettersGuessed(keyPressedCode = null) {
   if (keyPressedCode !== null && keyPressedCode >= 65 && keyPressedCode <= 90) {
-    if (lettersGuessed.indexOf(keyPressedCode) === -1) {
-      lettersGuessed.push(keyPressedCode);
+    if (game.lettersGuessed.indexOf(keyPressedCode) === -1) {
+      game.lettersGuessed.push(keyPressedCode);
+      updateGuessesRemaining();
     }
   }
+}
+
+function startNewGame() {
+  game.inProgress = true;
+  game.lettersGuessed = [];
+  game.remainingGuesses = 12;
+  game.statusText = constants.inProgress;
+
+  var randomIndex = Math.floor(Math.random() * wordsList.length);
+  game.currentWord = wordsList[randomIndex].toUpperCase();
+  console.log(game.currentWord);
 }
 
 document.onkeyup = function(event) {
   var keyPressed = event.key;
   var keyPressedCode = event.keyCode;
 
-  if (gameStatus) {
+  if (game.inProgress) {
     // Game already in progress
 
   } else {
-    // New game
-    gameStatus = true;
-    var randomIndex = Math.floor(Math.random() * wordsList.length);
-    currentWord = wordsList[randomIndex].toUpperCase();
-    console.log(currentWord);
+    if (keyPressedCode === 32) {
+      // Start New game
+      startNewGame();
+    }
   }
 
-  // update current word
-
-  // update remaining guesses count
-
-  // update guess history array
-
-  // check for end condition
-
-  updateGameScreen(keyPressedCode);
+  updateGame(keyPressedCode);
 }
 
-updateGameScreen();
+updateGame();
