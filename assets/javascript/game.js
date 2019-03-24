@@ -6,7 +6,8 @@ const constants = {
   newGame: 'Press The Space Bar To Start A New Game',
   inProgress: 'Press Any Letter To Continue',
   win: 'Congratulations! You Won!  Press The Space Bar To Start A New Game',
-  loss: 'Sorry, You Are Out Of Guesses.  Press The Space Bar To Start A New Game'
+  loss: 'Sorry, You Are Out Of Guesses.  Press The Space Bar To Start A New Game',
+  maxGuesses: 2
 }
 
 var game = {
@@ -26,6 +27,8 @@ var gameStatusElement = document.getElementById('gameStatus');
 var currentWordElement = document.getElementById('currentWord');
 var lettersGuessedElement = document.getElementById('lettersGuessed');
 var numGuessesRemainingElement = document.getElementById('numGuessesRemaining');
+var winCountElement = document.getElementById('winCount');
+var lossCountElement = document.getElementById('lossCount');
 
 function updateGame(keyPressedCode = null) {
   // update guess history array
@@ -36,6 +39,8 @@ function updateGame(keyPressedCode = null) {
 
   // update game display
   gameStatusElement.textContent = game.statusText;
+  winCountElement.textContent = game.wins;
+  lossCountElement.textContent = game.losses;
 
   var currentWordListElement = document.getElementById('currentWordList');
   if (currentWordListElement === null) {
@@ -104,7 +109,7 @@ function checkForEndCondition() {
     endFlag = true;
   }
 
-  if (endFlag) {
+  if (endFlag && game.inProgress) {
     game.inProgress = false;
     
     if (userWins) {
@@ -140,7 +145,7 @@ function updateLettersGuessed(keyPressedCode = null) {
 function startNewGame() {
   game.inProgress = true;
   game.lettersGuessed = [];
-  game.remainingGuesses = 12;
+  game.remainingGuesses = constants.maxGuesses;
   game.statusText = constants.inProgress;
   game.currentWordAscii = {};
 
