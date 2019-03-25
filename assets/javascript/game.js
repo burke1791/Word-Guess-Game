@@ -18,7 +18,8 @@ var game = {
   statusText: constants.newGame,
   currentWordAscii: {},
   wins: 0,
-  losses: 0
+  losses: 0,
+  imgUrl: ''
 }
 
 // Initialize list of possible words
@@ -31,6 +32,7 @@ var lettersGuessedElement = document.getElementById('lettersGuessed');
 var numGuessesRemainingElement = document.getElementById('numGuessesRemaining');
 var winCountElement = document.getElementById('winCount');
 var lossCountElement = document.getElementById('lossCount');
+var teamLogoElement = document.getElementById('teamLogoImg');
 
 // Updates the game variables and the UI
 function updateGame(keyPressedCode = null) {
@@ -49,7 +51,7 @@ function updateGame(keyPressedCode = null) {
   if (currentWordListElement === null) {
     currentWordListElement = document.createElement('ul');
     currentWordListElement.setAttribute('id', 'currentWordList');
-    currentWordListElement.setAttribute('class', 'currentWord');
+    currentWordListElement.setAttribute('class', 'currentWord p-0');
 
     currentWordElement.appendChild(currentWordListElement);
   }
@@ -78,7 +80,7 @@ function updateGame(keyPressedCode = null) {
   if (lettersGuessedListElement === null) {
     lettersGuessedListElement = document.createElement('ul');
     lettersGuessedListElement.setAttribute('id', 'lettersGuessedList');
-    lettersGuessedListElement.setAttribute('class', 'lettersGuessedList');
+    lettersGuessedListElement.setAttribute('class', 'lettersGuessedList p-0');
 
     lettersGuessedElement.appendChild(lettersGuessedListElement);
   }
@@ -118,11 +120,20 @@ function checkForEndCondition() {
     if (userWins) {
       game.statusText = constants.win;
       game.wins++;
+
+      displayTeamLogo();
     } else {
       game.statusText = constants.loss;
       game.losses++;
     }
   }
+}
+
+function displayTeamLogo() {
+  var teamLogoImgElement = document.createElement('img');
+  teamLogoImgElement.setAttribute('src', game.imgUrl);
+
+  teamLogoElement.appendChild(teamLogoImgElement);
 }
 
 function updateGuessesRemaining() {
@@ -146,6 +157,8 @@ function updateLettersGuessed(keyPressedCode = null) {
 }
 
 function startNewGame() {
+  teamLogoElement.innerHTML = '';
+
   game.inProgress = true;
   game.lettersGuessed = [];
   game.remainingGuesses = constants.maxGuesses;
@@ -155,6 +168,12 @@ function startNewGame() {
   var randomIndex = Math.floor(Math.random() * wordsList.length);
   game.currentWord = wordsList[randomIndex].toUpperCase();
 
+  if (game.currentWord === 'NEBRASKA') {
+    game.imgUrl = 'assets/images/' + game.currentWord + '.jpg';
+  } else {
+    game.imgUrl = 'assets/images/' + game.currentWord + '.png';
+  }
+  
   for (var char of game.currentWord) {
     if (char.charCodeAt(0) === 32) {
       game.currentWordAscii[char.charCodeAt(0)] = true;
