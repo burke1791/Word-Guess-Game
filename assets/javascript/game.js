@@ -47,6 +47,7 @@ function updateGame(keyPressedCode = null) {
   winCountElement.textContent = game.wins;
   lossCountElement.textContent = game.losses;
 
+  // updates current word display
   var currentWordListElement = document.getElementById('currentWordList');
   if (currentWordListElement === null) {
     currentWordListElement = document.createElement('ul');
@@ -63,19 +64,34 @@ function updateGame(keyPressedCode = null) {
     currentWordLetter.setAttribute('class', 'mx-2');
     currentWordLetter.setAttribute('id', charCode);
     
-    if (game.lettersGuessed.indexOf(charCode) >= 0) {
-      currentWordLetter.textContent = String.fromCharCode(charCode);
-    } else if (char.charCodeAt(0) === 32) {
-      currentWordLetter.textContent = ' ';
+    if (game.inProgress) {
+      if (game.lettersGuessed.indexOf(charCode) >= 0) {
+        currentWordLetter.textContent = String.fromCharCode(charCode);
+      } else if (char.charCodeAt(0) === 32) {
+        currentWordLetter.textContent = ' ';
+      } else {
+        currentWordLetter.textContent = '_';
+      }
     } else {
-      currentWordLetter.textContent = '_';
+      // display the letters not guessed in red
+      if (game.lettersGuessed.indexOf(charCode) >= 0) {
+        currentWordLetter.textContent = String.fromCharCode(charCode);
+      } else if (char.charCodeAt(0) === 32) {
+        currentWordLetter.textContent = ' ';
+      } else {
+        currentWordLetter.textContent = String.fromCharCode(charCode);
+        currentWordLetter.setAttribute('class', 'mx-2 text-danger');
+      }
     }
+    
     
     currentWordListElement.appendChild(currentWordLetter);
   }
 
+  // updates remaining guesses display
   numGuessesRemainingElement.textContent = game.remainingGuesses;
   
+  // updates letters guessed display
   var lettersGuessedListElement = document.getElementById('lettersGuessedList');
   if (lettersGuessedListElement === null) {
     lettersGuessedListElement = document.createElement('ul');
