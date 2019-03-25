@@ -1,21 +1,19 @@
-var gameStatus = false;
-var endCondition = false;
-var guessesRemaining;
-
-const constants = {
-  newGame: 'Press The Space Bar To Start A New Game',
-  inProgress: 'Press Any Letter To Continue',
-  win: 'Congratulations! You Won!  Press The Space Bar To Start A New Game',
-  loss: 'Sorry, You Are Out Of Guesses.  Press The Space Bar To Start A New Game',
-  maxGuesses: 2
+// initialize game constants
+const CONSTANTS = {
+  NEW_GAME: 'Press The Space Bar To Start A New Game',
+  IN_PROGRESS: 'Press Any Letter To Continue',
+  WIN: 'Congratulations! You Won!  Press The Space Bar To Start A New Game',
+  LOSS: 'Sorry, You Are Out Of Guesses.  Press The Space Bar To Start A New Game',
+  MAX_GUESSES: 2
 }
 
+// initialize game object
 var game = {
   inProgress: false,
   currentWord: '',
   lettersGuessed: [],
   remainingGuesses: 0,
-  statusText: constants.newGame,
+  statusText: CONSTANTS.NEW_GAME,
   currentWordAscii: {},
   wins: 0,
   losses: 0
@@ -24,7 +22,7 @@ var game = {
 // Initialize list of possible words
 var wordsList = ['Illinois', 'Indiana', 'Ohio State', 'Iowa', 'Northwestern', 'Minnesota', 'Michigan', 'Michigan State', 'Penn State', 'Maryland', 'Rutgers', 'Wisconsin', 'Purdue', 'Nebraska'];
 
-// Initialize applicable elements
+// Initialize DOM element variables
 var gameStatusElement = document.getElementById('gameStatus');
 var currentWordElement = document.getElementById('currentWord');
 var lettersGuessedElement = document.getElementById('lettersGuessed');
@@ -116,21 +114,23 @@ function checkForEndCondition() {
     game.inProgress = false;
     
     if (userWins) {
-      game.statusText = constants.win;
+      game.statusText = CONSTANTS.WIN;
       game.wins++;
     } else {
-      game.statusText = constants.loss;
+      game.statusText = CONSTANTS.LOSS;
       game.losses++;
     }
   }
 }
 
+// decrease guesses remaining by one
 function updateGuessesRemaining() {
-  if (!gameStatus && game.remainingGuesses > 0) {
+  if (game.remainingGuesses > 0) {
     game.remainingGuesses--;
   }
 }
 
+// update the letters guessed array if the user entered a valid character
 function updateLettersGuessed(keyPressedCode = null) {
   if (keyPressedCode !== null && keyPressedCode >= 65 && keyPressedCode <= 90) {
     if (game.lettersGuessed.indexOf(keyPressedCode) === -1) {
@@ -139,17 +139,19 @@ function updateLettersGuessed(keyPressedCode = null) {
       if (game.currentWordAscii[keyPressedCode] !== undefined) {
         game.currentWordAscii[keyPressedCode] = true;
       } else {
+        // if the user enters a wrong letter, decrease guesses remaining by 1
         updateGuessesRemaining();
       }
     }
   }
 }
 
+// reset the game object to its initial state
 function startNewGame() {
   game.inProgress = true;
   game.lettersGuessed = [];
-  game.remainingGuesses = constants.maxGuesses;
-  game.statusText = constants.inProgress;
+  game.remainingGuesses = CONSTANTS.MAX_GUESSES;
+  game.statusText = CONSTANTS.IN_PROGRESS;
   game.currentWordAscii = {};
 
   var randomIndex = Math.floor(Math.random() * wordsList.length);
@@ -164,18 +166,13 @@ function startNewGame() {
   }
 }
 
+// listen to the user's key presses
 document.onkeyup = function(event) {
-  var keyPressed = event.key;
   var keyPressedCode = event.keyCode;
 
-  if (game.inProgress) {
-    // Game already in progress
-
-  } else {
-    if (keyPressedCode === 32) {
-      // Start New game
-      startNewGame();
-    }
+  // if the game is not in progress and the space bar was pressed, start a new game
+  if (!game.inProgress && keyPressedCode === 32) {
+    startNewGame();
   }
 
   updateGame(keyPressedCode);
