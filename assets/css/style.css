@@ -1,5 +1,27 @@
+body {
+  background: url('../images/B1G_Conference.png') no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;
+  font-size: 1.3rem;
+}
+
 .currentWord li,
 .lettersGuessedList li {
   list-style: none;
   display: inline;
+}
+
+.semi-bg {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.teamLogoImg {
+  background-color: #000;
+  border-radius: 20px;
+}
+
+.teamLogoImg img {
+  width: 200px;
+  height: auto;
 }
