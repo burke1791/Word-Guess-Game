@@ -99,7 +99,7 @@ function updateGame(keyPressedCode = null) {
     lettersGuessedElement.appendChild(lettersGuessedListElement);
   }
 
-  
+
   lettersGuessedListElement.innerHTML = '';
   for (var i = 0; i < game.lettersGuessed.length; i++) {
     var guessedLetter = document.createElement('li');
@@ -132,12 +132,14 @@ function checkForEndCondition() {
   if (endFlag && game.inProgress) {
     game.inProgress = false;
     
+    // if the user won, update the win count and display the school's logo
     if (userWins) {
       game.statusText = CONSTANTS.WIN;
       game.wins++;
 
       displayTeamLogo();
     } else {
+      // update the loss count
       game.statusText = CONSTANTS.LOSS;
       game.losses++;
     }
@@ -161,10 +163,14 @@ function updateGuessesRemaining() {
 
 // update the letters guessed array if the user entered a valid character
 function updateLettersGuessed(keyPressedCode = null) {
+  // check for valid input - any letter: a-z
   if (keyPressedCode !== null && keyPressedCode >= 65 && keyPressedCode <= 90) {
+    // check if user has already guessed the letter
     if (game.lettersGuessed.indexOf(keyPressedCode) === -1) {
+      // append this user guess to the guess history array
       game.lettersGuessed.push(keyPressedCode);
 
+      // if user guess is part of the word, set the char code to true
       if (game.currentWordAscii[keyPressedCode] !== undefined) {
         game.currentWordAscii[keyPressedCode] = true;
       } else {
@@ -188,12 +194,15 @@ function startNewGame() {
   var randomIndex = Math.floor(Math.random() * wordsList.length);
   game.currentWord = wordsList[randomIndex].toUpperCase();
 
+
   if (game.currentWord === 'NEBRASKA') {
+    // couldn't find a nebraska.png with a transparent background
     game.imgUrl = 'assets/images/' + game.currentWord + '.jpg';
   } else {
     game.imgUrl = 'assets/images/' + game.currentWord + '.png';
   }
   
+  // set each unique char code of the chosen word to false (except spaces)
   for (var char of game.currentWord) {
     if (char.charCodeAt(0) === 32) {
       game.currentWordAscii[char.charCodeAt(0)] = true;
