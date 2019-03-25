@@ -99,6 +99,7 @@ function updateGame(keyPressedCode = null) {
     lettersGuessedElement.appendChild(lettersGuessedListElement);
   }
 
+  
   lettersGuessedListElement.innerHTML = '';
   for (var i = 0; i < game.lettersGuessed.length; i++) {
     var guessedLetter = document.createElement('li');
@@ -143,9 +144,7 @@ function checkForEndCondition() {
   }
 }
 
-<<<<<<< HEAD
-// decrease guesses remaining by one
-=======
+// displays the applicable team's logo if the user wins
 function displayTeamLogo() {
   var teamLogoImgElement = document.createElement('img');
   teamLogoImgElement.setAttribute('src', game.imgUrl);
@@ -153,7 +152,7 @@ function displayTeamLogo() {
   teamLogoElement.appendChild(teamLogoImgElement);
 }
 
->>>>>>> 8e369bd65363b4d7128ecb5ad52cf92c27b3979c
+// decrease guesses remaining by 1
 function updateGuessesRemaining() {
   if (game.remainingGuesses > 0) {
     game.remainingGuesses--;
@@ -216,4 +215,5 @@ document.onkeyup = function(event) {
   updateGame(keyPressedCode);
 }
 
+// update game UI on browser load
 updateGame();
