@@ -35,7 +35,10 @@ var teamLogoElement = document.getElementById('teamLogoImg');
 // Updates the game variables and the UI
 function updateGame(keyPressedCode = null) {
   // update guess history array
-  updateLettersGuessed(keyPressedCode);
+  if (game.inProgress) {
+    updateLettersGuessed(keyPressedCode);
+  }
+  
 
   // check for end condition
   checkForEndCondition();
@@ -194,13 +197,7 @@ function startNewGame() {
   var randomIndex = Math.floor(Math.random() * wordsList.length);
   game.currentWord = wordsList[randomIndex].toUpperCase();
 
-
-  if (game.currentWord === 'NEBRASKA') {
-    // couldn't find a nebraska.png with a transparent background
-    game.imgUrl = 'assets/images/' + game.currentWord + '.jpg';
-  } else {
-    game.imgUrl = 'assets/images/' + game.currentWord + '.png';
-  }
+  game.imgUrl = 'assets/images/' + game.currentWord + '.png';
   
   // set each unique char code of the chosen word to false (except spaces)
   for (var char of game.currentWord) {
