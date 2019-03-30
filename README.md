@@ -1,9 +1,12 @@
 # Word-Guess-Game
-Hangman Style Browser Game
+A Hangman style browser game whose choices are Big Ten Schools.  Press the space bar to start a game and you are allowed two incorrect guesses before you lose.  After winning/losing a game, simply press the space bar to start another game.
+
+Wins and losses are tracked on the screen and will remain there as long as you do not refresh the page.
+
+Good luck!
 
 
-
-Big Ten Logo Source Links:
+## Big Ten Logo Images Sources:
 
 B1G Conference Background Image: https://cdn.vox-cdn.com/thumbor/sXgIOwYET2Hg37G5rRcBlYTmiyw=/0x0:933x523/1400x1050/filters:focal(393x188:541x336):format(png)/cdn.vox-cdn.com/uploads/chorus_image/image/52171595/B1G_Conference.0.png
 

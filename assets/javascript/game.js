@@ -7,19 +7,6 @@ const CONSTANTS = {
   MAX_GUESSES: 2
 }
 
-// initialize game object
-var game = {
-  inProgress: false,
-  currentWord: '',
-  lettersGuessed: [],
-  remainingGuesses: 0,
-  statusText: CONSTANTS.NEW_GAME,
-  currentWordAscii: {},
-  wins: 0,
-  losses: 0,
-  imgUrl: ''
-}
-
 // Initialize list of possible words
 var wordsList = ['Illinois', 'Indiana', 'Ohio State', 'Iowa', 'Northwestern', 'Minnesota', 'Michigan', 'Michigan State', 'Penn State', 'Maryland', 'Rutgers', 'Wisconsin', 'Purdue', 'Nebraska'];
 
@@ -32,16 +19,142 @@ var winCountElement = document.getElementById('winCount');
 var lossCountElement = document.getElementById('lossCount');
 var teamLogoElement = document.getElementById('teamLogoImg');
 
+// initialize game object
+var game = {
+  inProgress: false,
+  currentWord: '',
+  lettersGuessed: [],
+  remainingGuesses: 0,
+  statusText: CONSTANTS.NEW_GAME,
+  currentWordAscii: {},
+  wins: 0,
+  losses: 0,
+  imgUrl: '',
+
+  // reset the game object to its initial state
+  startNewGame: function() {
+    teamLogoElement.innerHTML = '';
+
+    this.inProgress = true;
+    this.lettersGuessed = [];
+    this.remainingGuesses = CONSTANTS.MAX_GUESSES;
+    this.statusText = CONSTANTS.IN_PROGRESS;
+    this.currentWordAscii = {};
+
+    var randomIndex = Math.floor(Math.random() * wordsList.length);
+    this.currentWord = wordsList[randomIndex].toUpperCase();
+
+    this.imgUrl = 'assets/images/' + game.currentWord + '.png';
+    
+    // set each unique char code of the chosen word to false (except spaces)
+    for (var char of game.currentWord) {
+      if (char.charCodeAt(0) === 32) {
+        this.currentWordAscii[char.charCodeAt(0)] = true;
+      } else {
+        this.currentWordAscii[char.charCodeAt(0)] = false;
+      }
+    }
+  },
+
+  // update the letters guessed array if the user entered a valid character
+  updateLettersGuessed: function(keyPressedCode = null) {
+    // check for valid input - any letter: a-z
+    if (keyPressedCode !== null && keyPressedCode >= 65 && keyPressedCode <= 90) {
+      // check if user has already guessed the letter
+      if (this.lettersGuessed.indexOf(keyPressedCode) === -1) {
+        // append this user guess to the guess history array
+        this.lettersGuessed.push(keyPressedCode);
+
+        // if user guess is part of the word, set the char code to true
+        if (this.currentWordAscii[keyPressedCode] !== undefined) {
+          this.currentWordAscii[keyPressedCode] = true;
+        } else {
+          // if the user enters a wrong letter, decrease guesses remaining by 1
+          this.updateGuessesRemaining();
+        }
+      }
+    }
+  },
+
+  // decrease guesses remaining by 1
+  updateGuessesRemaining: function() {
+    if (this.remainingGuesses > 0) {
+      this.remainingGuesses--;
+    }
+  },
+
+  checkForEndCondition: function() {
+    // assume game is over and user won
+    var endFlag = true;
+    var userWins = true;
+
+    // if the user didn't guess all of the letters, game may not be over
+    for (var charCode in this.currentWordAscii) {
+      if (!this.currentWordAscii[charCode]) {
+        endFlag = false;
+        userWins = false;
+      }
+    }
+
+    // game is over when user runs out of guesses
+    if (game.remainingGuesses <= 0) {
+      endFlag = true;
+    }
+
+    if (endFlag && this.inProgress) {
+      this.inProgress = false;
+      
+      // if the user won, update the win count and display the school's logo
+      if (userWins) {
+        this.statusText = CONSTANTS.WIN;
+        this.wins++;
+
+        displayTeamLogo();
+      } else {
+        // update the loss count
+        this.statusText = CONSTANTS.LOSS;
+        this.losses++;
+      }
+    }
+  },
+
+  updateGameState: function(keyPressedCode = null) {
+    // update guess history array if the game is in progress
+    if (this.inProgress) {
+      this.updateLettersGuessed(keyPressedCode);
+    }
+
+    // check if the game is at an end state
+    this.checkForEndCondition();
+  }
+}
+
+// function updateUI()
+
+// function updateCurrentWordUI()
+
+// function updateGuessHistoryUI()
+
+// function updateGameStatusUI()
+
+// displays the applicable team's logo if the user wins
+function displayTeamLogo() {
+  var teamLogoImgElement = document.createElement('img');
+  teamLogoImgElement.setAttribute('src', game.imgUrl);
+
+  teamLogoElement.appendChild(teamLogoImgElement);
+}
+
 // Updates the game variables and the UI
 function updateGame(keyPressedCode = null) {
   // update guess history array
   if (game.inProgress) {
-    updateLettersGuessed(keyPressedCode);
+    game.updateLettersGuessed(keyPressedCode);
   }
   
 
   // check for end condition
-  checkForEndCondition();
+  game.checkForEndCondition();
 
   // update game display
   gameStatusElement.textContent = game.statusText;
@@ -114,108 +227,14 @@ function updateGame(keyPressedCode = null) {
   }
 }
 
-function checkForEndCondition() {
-  // assume game is over and user won
-  var endFlag = true;
-  var userWins = true;
-
-  // if the user didn't guess all of the letters, game may not be over
-  for (var charCode in game.currentWordAscii) {
-    if (!game.currentWordAscii[charCode]) {
-      endFlag = false;
-      userWins = false;
-    }
-  }
-
-  // game is over when user runs out of guesses
-  if (game.remainingGuesses <= 0) {
-    endFlag = true;
-  }
-
-  if (endFlag && game.inProgress) {
-    game.inProgress = false;
-    
-    // if the user won, update the win count and display the school's logo
-    if (userWins) {
-      game.statusText = CONSTANTS.WIN;
-      game.wins++;
-
-      displayTeamLogo();
-    } else {
-      // update the loss count
-      game.statusText = CONSTANTS.LOSS;
-      game.losses++;
-    }
-  }
-}
-
-// displays the applicable team's logo if the user wins
-function displayTeamLogo() {
-  var teamLogoImgElement = document.createElement('img');
-  teamLogoImgElement.setAttribute('src', game.imgUrl);
-
-  teamLogoElement.appendChild(teamLogoImgElement);
-}
-
-// decrease guesses remaining by 1
-function updateGuessesRemaining() {
-  if (game.remainingGuesses > 0) {
-    game.remainingGuesses--;
-  }
-}
-
-// update the letters guessed array if the user entered a valid character
-function updateLettersGuessed(keyPressedCode = null) {
-  // check for valid input - any letter: a-z
-  if (keyPressedCode !== null && keyPressedCode >= 65 && keyPressedCode <= 90) {
-    // check if user has already guessed the letter
-    if (game.lettersGuessed.indexOf(keyPressedCode) === -1) {
-      // append this user guess to the guess history array
-      game.lettersGuessed.push(keyPressedCode);
-
-      // if user guess is part of the word, set the char code to true
-      if (game.currentWordAscii[keyPressedCode] !== undefined) {
-        game.currentWordAscii[keyPressedCode] = true;
-      } else {
-        // if the user enters a wrong letter, decrease guesses remaining by 1
-        updateGuessesRemaining();
-      }
-    }
-  }
-}
-
-// reset the game object to its initial state
-function startNewGame() {
-  teamLogoElement.innerHTML = '';
-
-  game.inProgress = true;
-  game.lettersGuessed = [];
-  game.remainingGuesses = CONSTANTS.MAX_GUESSES;
-  game.statusText = CONSTANTS.IN_PROGRESS;
-  game.currentWordAscii = {};
-
-  var randomIndex = Math.floor(Math.random() * wordsList.length);
-  game.currentWord = wordsList[randomIndex].toUpperCase();
-
-  game.imgUrl = 'assets/images/' + game.currentWord + '.png';
-  
-  // set each unique char code of the chosen word to false (except spaces)
-  for (var char of game.currentWord) {
-    if (char.charCodeAt(0) === 32) {
-      game.currentWordAscii[char.charCodeAt(0)] = true;
-    } else {
-      game.currentWordAscii[char.charCodeAt(0)] = false;
-    }
-  }
-}
-
 // listen to the user's key presses
 document.onkeyup = function(event) {
   var keyPressedCode = event.keyCode;
 
   // if the game is not in progress and the space bar was pressed, start a new game
   if (!game.inProgress && keyPressedCode === 32) {
-    startNewGame();
+    // startNewGame();
+    game.startNewGame();
   }
 
   updateGame(keyPressedCode);
