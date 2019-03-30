@@ -5,6 +5,7 @@ Wins and losses are tracked on the screen and will remain there as long as you d
 
 Good luck!
 
+https://burke1791.github.io/Word-Guess-Game/
 
 ## Big Ten Logo Images Sources:
 

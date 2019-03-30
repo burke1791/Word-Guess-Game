@@ -126,41 +126,26 @@ var game = {
 
     // check if the game is at an end state
     this.checkForEndCondition();
+
+    updateUI();
   }
 }
 
-// function updateUI()
-
-// function updateCurrentWordUI()
-
-// function updateGuessHistoryUI()
-
-// function updateGameStatusUI()
-
-// displays the applicable team's logo if the user wins
-function displayTeamLogo() {
-  var teamLogoImgElement = document.createElement('img');
-  teamLogoImgElement.setAttribute('src', game.imgUrl);
-
-  teamLogoElement.appendChild(teamLogoImgElement);
+function updateUI() {
+  updateGameStatusUI();
+  updateCurrentWordUI();
+  updateGuessHistoryUI();
 }
 
-// Updates the game variables and the UI
-function updateGame(keyPressedCode = null) {
-  // update guess history array
-  if (game.inProgress) {
-    game.updateLettersGuessed(keyPressedCode);
-  }
-  
-
-  // check for end condition
-  game.checkForEndCondition();
-
-  // update game display
+function updateGameStatusUI() {
+  // update game status elements
   gameStatusElement.textContent = game.statusText;
   winCountElement.textContent = game.wins;
   lossCountElement.textContent = game.losses;
+  numGuessesRemainingElement.textContent = game.remainingGuesses;
+}
 
+function updateCurrentWordUI() {
   // updates current word display
   var currentWordListElement = document.getElementById('currentWordList');
   if (currentWordListElement === null) {
@@ -201,10 +186,9 @@ function updateGame(keyPressedCode = null) {
     
     currentWordListElement.appendChild(currentWordLetter);
   }
+}
 
-  // updates remaining guesses display
-  numGuessesRemainingElement.textContent = game.remainingGuesses;
-  
+function updateGuessHistoryUI() {
   // updates letters guessed display
   var lettersGuessedListElement = document.getElementById('lettersGuessedList');
   if (lettersGuessedListElement === null) {
@@ -227,6 +211,14 @@ function updateGame(keyPressedCode = null) {
   }
 }
 
+// displays the applicable team's logo if the user wins
+function displayTeamLogo() {
+  var teamLogoImgElement = document.createElement('img');
+  teamLogoImgElement.setAttribute('src', game.imgUrl);
+
+  teamLogoElement.appendChild(teamLogoImgElement);
+}
+
 // listen to the user's key presses
 document.onkeyup = function(event) {
   var keyPressedCode = event.keyCode;
@@ -237,8 +229,8 @@ document.onkeyup = function(event) {
     game.startNewGame();
   }
 
-  updateGame(keyPressedCode);
+  game.updateGameState(keyPressedCode);
 }
 
 // update game UI on browser load
-updateGame();
+updateUI();
